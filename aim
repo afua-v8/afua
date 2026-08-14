@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aimlock Web</title>
+    <style>
+        /* Nền màu tím hiện đại */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #2e0854, #6a1b9a);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background 0.5s ease;
+        }
+
+        /* Khi tắt (OFF) - Nền đổi sang màu tím tối hơn */
+        body.is-off {
+            background: linear-gradient(135deg, #120224, #2c0347);
+        }
+
+        /* Container chứa nút bấm */
+        .container {
+            text-align: center;
+        }
+
+        /* Cấu trúc nút Aim */
+        .aim-btn {
+            width: 140px;
+            height: 140px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffffff;
+            background: linear-gradient(145deg, #b388ff, #7c4dff);
+            border: 4px solid #ffffff;
+            border-radius: 50%;
+            cursor: pointer;
+            outline: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            /* Hiệu ứng sóng lan tỏa khi đang BẬT */
+            box-shadow: 0 0 0 0 rgba(124, 77, 255, 0.7), 0 0 20px rgba(124, 77, 255, 0.5);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: pulse 2s infinite;
+        }
+
+        /* Hiệu ứng thu nhỏ khi chạm tay vào nút */
+        .aim-btn:active {
+            transform: scale(0.9);
+        }
+
+        /* Trạng thái khi nút bị TẮT */
+        .aim-btn.off {
+            background: linear-gradient(145deg, #424242, #212121);
+            border-color: #757575;
+            color: #888888;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5), 0 4px 10px rgba(0,0,0,0.3);
+            animation: none; /* Tắt hiệu ứng lan tỏa */
+        }
+
+        /* Chữ trạng thái ON/OFF phía dưới nút */
+        .status-text {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #e040fb;
+            font-weight: 500;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+        .status-text.off {
+            color: #757575;
+        }
+
+        /* Định nghĩa hiệu ứng sóng lan tỏa tự động (Pulse) */
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(224, 64, 251, 0.7), 0 0 10px rgba(224, 64, 251, 0.5);
+            }
+            70% {
+                box-shadow: 0 0 0 25px rgba(224, 64, 251, 0), 0 0 20px rgba(224, 64, 251, 0.3);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(224, 64, 251, 0), 0 0 10px rgba(224, 64, 251, 0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+        <!-- Nút bấm chữ AIM tròn ở giữa -->
+        <button class="aim-btn" id="aimBtn" onclick="toggleAim()">AIM</button>
+        <!-- Chữ hiển thị trạng thái -->
+        <div class="status-text" id="statusTxt">STATUS: ON</div>
+    </div>
+
+    <script>
+        function toggleAim() {
+            const btn = document.getElementById('aimBtn');
+            const txt = document.getElementById('statusTxt');
+            const body = document.body;
+
+            // Chuyển đổi qua lại giữa bật và tắt
+            if (btn.classList.contains('off')) {
+                // Đổi sang trạng thái BẬT (ON)
+                btn.classList.remove('off');
+                txt.classList.remove('off');
+                body.classList.remove('is-off');
+                txt.innerText = "STATUS: ON";
+            } else {
+                // Đổi sang trạng thái TẮT (OFF)
+                btn.classList.add('off');
+                txt.classList.add('off');
+                body.classList.add('is-off');
+                txt.innerText = "STATUS: OFF";
+            }
+        }
+    </script>
+</body>
+</html>
