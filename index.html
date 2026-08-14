@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>afua · điều khiển</title>
+  <style>
+    /* ----- reset & nền ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #0b0719;
+      overflow: hidden;
+    }
+    /* ----- khung đăng nhập ----- */
+    .login-wrap {
+      position: relative;
+      z-index: 10;
+      background: rgba(30, 18, 60, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(180, 130, 255, 0.25);
+      border-radius: 48px;
+      padding: 48px 40px 40px;
+      width: 380px;
+      max-width: 92vw;
+      box-shadow: 0 20px 60px #3a1f8a55, 0 0 80px #6b3eff33;
+      transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .login-wrap h1 {
+      color: #d4c4ff;
+      font-weight: 300;
+      font-size: 2.4rem;
+      letter-spacing: 4px;
+      text-align: center;
+      text-shadow: 0 0 30px #925eff;
+      margin-bottom: 32px;
+    }
+    .login-wrap label {
+      color: #b8a6e6;
+      font-size: 0.8rem;
+      letter-spacing: 1.5px;
+      display: block;
+      margin-top: 18px;
+      margin-bottom: 6px;
+    }
+    .login-wrap input {
+      width: 100%;
+      padding: 14px 20px;
+      background: rgba(12, 6, 28, 0.7);
+      border: 1px solid #4a2e7a;
+      border-radius: 40px;
+      color: #efeaff;
+      font-size: 1rem;
+      outline: none;
+      transition: 0.3s;
+    }
+    .login-wrap input:focus {
+      border-color: #b28aff;
+      box-shadow: 0 0 24px #7a4aff66;
+    }
+    .login-wrap button {
+      width: 100%;
+      padding: 16px;
+      margin-top: 32px;
+      background: linear-gradient(135deg, #7733ff, #b266ff);
+      border: none;
+      border-radius: 60px;
+      color: #fff;
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: 0.25s;
+      box-shadow: 0 6px 28px #5f2ee0aa;
+    }
+    .login-wrap button:hover { transform: scale(1.02); box-shadow: 0 8px 44px #844effcc; }
+    .login-wrap .err {
+      color: #ff87a8;
+      font-size: 0.85rem;
+      text-align: center;
+      margin-top: 14px;
+      min-height: 22px;
+    }
+    /* ----- bảng điều khiển (sau login) ----- */
+    .dash {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 720px;
+      max-width: 94vw;
+      background: rgba(22, 10, 48, 0.6);
+      backdrop-filter: blur(22px) saturate(180%);
+      -webkit-backdrop-filter: blur(22px) saturate(180%);
+      border: 1px solid #8855ff77;
+      border-radius: 72px;
+      padding: 50px 40px 60px;
+      box-shadow: 0 0 90px #4f29dd55, inset 0 0 110px #7733ff33;
+      animation: glowPulse 5s infinite alternate;
+      transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes glowPulse {
+      0% { box-shadow: 0 0 60px #3f1a9f44, inset 0 0 60px #4f1fcc22; }
+      100% { box-shadow: 0 0 140px #9f6aff99, inset 0 0 140px #8b5cff66; }
+    }
+    .dash h2 {
+      color: #ece0ff;
+      font-weight: 200;
+      font-size: 2.8rem;
+      letter-spacing: 8px;
+      text-shadow: 0 0 70px #bf9eff;
+      margin-bottom: 30px;
+    }
+    .btn-group {
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn-neon {
+      padding: 18px 44px;
+      border-radius: 60px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      background: #1f133a;
+      color: #7a6a9a;
+      border: 2px solid #3a2a6a;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 12px #00000055;
+      letter-spacing: 1px;
+      min-width: 150px;
+    }
+    .btn-neon.active {
+      background: #4a2faa;
+      color: #ffffff;
+      border-color: #b28aff;
+      box-shadow: 0 0 36px #7a4affbb, inset 0 0 20px #c8b0ff77;
+    }
+    .btn-neon:disabled {
+      opacity: 0.3;
+      filter: grayscale(0.7);
+      cursor: not-allowed;
+      transform: none !important;
+    }
+    .btn-neon:not(:disabled):hover { transform: scale(1.05); }
+    #btnKichHoat {
+      background: #1f0f3a;
+      border-color: #5a3a8a;
+    }
+    #btnKichHoat.active {
+      background: #b266ff;
+      border-color: #e4ccff;
+      box-shadow: 0 0 70px #ae7affee, inset 0 0 50px #f0e4ff;
+      animation: flashKich 0.7s 2;
+    }
+    @keyframes flashKich {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.12); box-shadow: 0 0 120px #c48aff; }
+      100% { transform: scale(1); }
+    }
+    .status-line {
+      margin-top: 38px;
+      color: #c8b8f0;
+      font-size: 0.95rem;
+      letter-spacing: 2px;
+      background: #0e0822bb;
+      padding: 14px 32px;
+      border-radius: 60px;
+      border: 1px solid #5a3a8a;
+    }
+    /* ----- ẩn/hiện ----- */
+    .hidden { display: none !important; }
+    .fade-enter {
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes fadeUp {
+      0% { opacity: 0; transform: scale(0.92) translateY(24px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    /* ----- bóng nền ----- */
+    .bg-glow {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.25;
+      pointer-events: none;
+    }
+    .bg1 { width: 500px; height: 500px; background: #6a2be0; top: -200px; left: -150px; }
+    .bg2 { width: 600px; height: 600px; background: #a14cff; bottom: -250px; right: -200px; }
+    .bg3 { width: 300px; height: 300px; background: #b77aff; top: 40%; left: 70%; }
+  </style>
+</head>
+<body>
+  <!-- bóng nền -->
+  <div class="bg-glow bg1"></div>
+  <div class="bg-glow bg2"></div>
+  <div class="bg-glow bg3"></div>
+
+  <!-- ====== LOGIN ====== -->
+  <div id="loginBox" class="login-wrap">
+    <h1>⚡ afua</h1>
+    <label>Tên đăng nhập</label>
+    <input type="text" id="userIn" value="afua" placeholder="afua">
+    <label>Mật khẩu</label>
+    <input type="password" id="passIn" value="2026" placeholder="••••••">
+    <button id="loginBtn">KẾT NỐI</button>
+    <div id="errMsg" class="err"></div>
+  </div>
+
+  <!-- ====== DASHBOARD ====== -->
+  <div id="dashPanel" class="dash">
+    <h2>◈ ĐIỀU KHIỂN</h2>
+    <div class="btn-group">
+      <button id="btnAim" class="btn-neon" data-on="false">🎯 AIMLOCK</button>
+      <button id="btnNhe" class="btn-neon" data-on="false">🌀 NHẸ TÂM</button>
+      <button id="btnKich" class="btn-neon" disabled data-on="false">⚡ KÍCH HOẠT</button>
+    </div>
+    <div id="statusTxt" class="status-line">◆ TRẠNG THÁI: CHỜ BẬT AIMLOCK + NHẸ TÂM</div>
+  </div>
+
+  <script>
+    (function(){
+      // --- DOM ---
+      const loginBox = document.getElementById('loginBox');
+      const dash = document.getElementById('dashPanel');
+      const userIn = document.getElementById('userIn');
+      const passIn = document.getElementById('passIn');
+      const loginBtn = document.getElementById('loginBtn');
+      const errMsg = document.getElementById('errMsg');
+
+      const btnAim = document.getElementById('btnAim');
+      const btnNhe = document.getElementById('btnNhe');
+      const btnKich = document.getElementById('btnKich');
+      const statusTxt = document.getElementById('statusTxt');
+
+      // --- hằng đăng nhập ---
+      const U = 'afua';
+      const P = '2026';
+
+      // --- trạng thái nút ---
+      let aimOn = false;
+      let nheOn = false;
+      let kichOn = false;
+
+      // --- cập nhật nút 3 và status ---
+      function refreshKich() {
+        const can = aimOn && nheOn;
+        btnKich.disabled = !can;
+
+        if (kichOn && !can) {
+          // tự tắt kích hoạt
+          kichOn = false;
+          btnKich.dataset.on = 'false';
+          btnKich.classList.remove('active');
+          btnKich.textContent = '⚡ KÍCH HOẠT';
+        }
+
+        if (kichOn && can) {
+          statusTxt.textContent = '✅ KÍCH HOẠT THÀNH CÔNG — HỆ THỐNG SẴN SÀNG';
+        } else if (aimOn && nheOn) {
+          statusTxt.textContent = '⏳ SẴN SÀNG KÍCH HOẠT (bấm nút 3)';
+        } else {
+          statusTxt.textContent = '◆ TRẠNG THÁI: CHỜ BẬT AIMLOCK + NHẸ TÂM';
+        }
+      }
+
+      // --- toggle chung ---
+      function toggleBtn(btn, getState, setState, labelOn, labelOff) {
+        const newState = !getState();
+        setState(newState);
+        btn.dataset.on = newState ? 'true' : 'false';
+        btn.classList.toggle('active', newState);
+        btn.textContent = newState ? labelOn : labelOff;
+        refreshKich();
+      }
+
+      // nút aim
+      btnAim.addEventListener('click', function(){
+        toggleBtn(this,
+          () => aimOn,
+          (v) => aimOn = v,
+          '🎯 AIMLOCK ✓', '🎯 AIMLOCK'
+        );
+      });
+
+      // nút nhẹ tâm
+      btnNhe.addEventListener('click', function(){
+        toggleBtn(this,
+          () => nheOn,
+          (v) => nheOn = v,
+          '🌀 NHẸ TÂM ✓', '🌀 NHẸ TÂM'
+        );
+      });
+
+      // nút kích hoạt
+      btnKich.addEventListener('click', function(){
+        if (this.disabled) return;
+        if (!kichOn && aimOn && nheOn) {
+          kichOn = true;
+          this.dataset.on = 'true';
+          this.classList.add('active');
+          this.textContent = '⚡ ĐÃ KÍCH HOẠT';
+          statusTxt.textContent = '✅ KÍCH HOẠT THÀNH CÔNG — HIỆU ỨNG KÍCH HOẠT ĐÃ BẬT';
+          // reset animation flash
+          this.style.animation = 'none';
+          requestAnimationFrame(() => { this.style.animation = ''; });
+        } else if (kichOn) {
+          // tắt kích hoạt
+          kichOn = false;
+          this.dataset.on = 'false';
+          this.classList.remove('active');
+          this.textContent = '⚡ KÍCH HOẠT';
+          refreshKich(); // cập nhật status
+        }
+      });
+
+      // --- đăng nhập ---
+      function doLogin() {
+        const u = userIn.value.trim();
+        const p = passIn.value.trim();
+        if (u === U && p === P) {
+          errMsg.textContent = '';
+          loginBox.style.opacity = '0';
+          loginBox.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            loginBox.classList.add('hidden');
+            dash.classList.remove('hidden');
+            dash.classList.add('fade-enter');
+            // reset tất cả về tắt
+            aimOn = false; nheOn = false; kichOn = false;
+            btnAim.dataset.on = 'false'; btnAim.classList.remove('active'); btnAim.textContent = '🎯 AIMLOCK';
+            btnNhe.dataset.on = 'false'; btnNhe.classList.remove('active'); btnNhe.textContent = '🌀 NHẸ TÂM';
+            btnKich.dataset.on = 'false'; btnKich.classList.remove('active'); btnKich.textContent = '⚡ KÍCH HOẠT';
+            btnKich.disabled = true;
+            statusTxt.textContent = '◆ TRẠNG THÁI: CHỜ BẬT AIMLOCK + NHẸ TÂM';
+          }, 500);
+        } else {
+          errMsg.textContent = '❌ Sai tên hoặc mật khẩu';
+          loginBox.style.animation = 'none';
+          requestAnimationFrame(() => { loginBox.style.animation = 'shake 0.4s'; });
+        }
+      }
+
+      loginBtn.addEventListener('click', doLogin);
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !loginBox.classList.contains('hidden')) {
+          doLogin();
+        }
+      });
+
+      // thêm keyframes shake (nếu chưa có)
+      const styleShake = document.createElement('style');
+      styleShake.textContent = `
+        @keyframes shake {
+          0%,100% { transform: translateX(0); }
+          20% { transform: translateX(-12px); }
+          40% { transform: translateX(12px); }
+          60% { transform: translateX(-8px); }
+          80% { transform: translateX(8px); }
+        }
+      `;
+      document.head.appendChild(styleShake);
+
+      // khởi tạo disabled
+      btnKich.disabled = true;
+    })();
+  </script>
+</body>
+</html>
